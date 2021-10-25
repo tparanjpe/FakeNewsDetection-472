@@ -1,0 +1,22 @@
+Steps Required:
+- Understand what needs to be done: 
+  - Read up on Web-Scraping, try out the tutorial located here: https://towardsdatascience.com/web-scraping-using-selenium-python-8a60f4cf40ab
+  - How do we build our ML model?  
+    - Utilize Classification for the Model
+    - Calculate Mean Squared Error on Dataset
+    - Python Programming Language
+    
+    Go to the TA to check on implementation plan
+    
+ - Implement
+ - Test Implementation
+ - Verify Submission Criteria
+ 
+ 
+Timeline:
+- October 29th: Have a plan of action, do independent research on the way to approach questions above.
+- October 28th or November 2nd: Go to TA to verfify plan.
+- November 9th: Work on implementation, get help from TA as needed.
+- November 16th: Complete testing of implementation, make changes as needed. (added extra buffer before the deadline as padding)
+- November 20th: Confirm submission details.
+- Novmeber 23rd: Submit by 11:59pm.
