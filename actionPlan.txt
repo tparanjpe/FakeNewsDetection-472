@@ -3,7 +3,25 @@ Steps Required:
   - Read up on Web-Scraping, try out the tutorial located here: https://towardsdatascience.com/web-scraping-using-selenium-python-8a60f4cf40ab
   - How do we build our ML model?  
     - Utilize Classification for the Model
+	->for training dataset, this website has a tutorial: https://data-flair.training/blogs/train-test-set-in-python-ml/
+		-import dataset using pandas
+		-use scikit learn to split the data b/w labels and features
+	->for classification, use sklearn also
+		-documentation for sklearn: https://scikit-learn.org/stable/supervised_learning.html
+		-but which classification method should we use?
+			-here are some classification algorithms to consider:
+				K-Nearest Neighbors
+				Support Vector Machines
+				Decision Tree Classifiers/Random Forests
+				Naive Bayes
+				Linear Discriminant Analysis
+				Logistic Regression
+
     - Calculate Mean Squared Error on Dataset
+	->sklearn has a function for mean squared error calculation
+		-https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html
+		-geeeksforgeeks tutorial: https://www.geeksforgeeks.org/python-mean-squared-error/
+
     - Python Programming Language
     
     Go to the TA to check on implementation plan
