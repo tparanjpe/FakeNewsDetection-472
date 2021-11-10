@@ -2,7 +2,7 @@ Steps Required:
 - Understand what needs to be done: 
   - Read up on Web-Scraping, try out the tutorial located here: https://towardsdatascience.com/web-scraping-using-selenium-python-8a60f4cf40ab
   - This website explains XML path that will be needed for webscraping: https://www.scientecheasy.com/2020/07/find-xpath-chrome.html/
-  -Another web-scraping tutorial that seems helpful. It scrapes reddit: https://www.webscrapingapi.com/python-selenium-web-scraper/
+  - Another web-scraping tutorial that seems helpful. It scrapes reddit: https://www.webscrapingapi.com/python-selenium-web-scraper/
   - https://www.analyticssteps.com/blogs/what-naive-bayes-algorithm-machine-learning
   -sentiment analysis methods: https://blog.aureusanalytics.com/blog/5-natural-language-processing-techniques-for-extracting-information
   - How do we build our ML model?  
