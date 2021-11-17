@@ -10,14 +10,51 @@ import json
 from html.parser import HTMLParser
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
+import translators as ts
 
+# class ParseHTML(HTMLParser):
+#    dataReturned = ""
+#    def handle_data(self, data):
+#       #self.dataReturned.append(data)
+#       self.dataReturned+=data
+#       #print("Encountered some data  :", data)
 
-class ParseHTML(HTMLParser):
-   dataReturned = ""
-   def handle_data(self, data):
-      #self.dataReturned.append(data)
-      self.dataReturned+=data
-      #print("Encountered some data  :", data)
+def remove_dataComponents(htmlContent):
+   mySoup = BeautifulSoup(htmlContent, "html.parser")
+   for data in mySoup(['style', 'script']):
+      data.decompose()
+   return ' '.join(soup.stripped_strings)
+
+#contentToTranslate:String with HTML data
+def translateContent(x):
+   translatedString = ""
+   translatedSentences = []
+   if len(x) > 100:
+         split_strings = []
+         temp = ''
+         for index in range(0, len(x)):
+            if x[index] != '.' and x[index] != '!':
+               temp += x[index]
+               # print(temp)
+            else:
+               split_strings.append(temp)
+               temp = ''
+         #print(split_strings)
+         for y in split_strings:
+            #print('orginal text: ',y)
+            result = (ts.google(y))
+            #print('translated text: ', result)
+            translatedSentences.append(result)
+            translatedString+=result
+   else:
+      #print('orginal text: ',x)
+      result = (ts.google(x))
+      #print('translated text: ', result)
+      translatedSentences.append(result)
+      translatedString+=result
+   
+   return translatedString
+
 
 truthList = ["true", "truth"]
 falseList = ["false", "fake"]
@@ -34,7 +71,7 @@ content = driver.page_source
 soup = BeautifulSoup(content, features="html.parser")
 
 
-myParser = ParseHTML()
+#myParser = ParseHTML()
 termFrequency = CountVectorizer()
 counter = 0
 counter2 = 0
@@ -85,14 +122,13 @@ for x in collected_URLs_Train:
    
    # print(content)
    collected_HTML_Train.append(content)
-   # languageDetected = TextBlob(content)
-   Englishstr = content
+   dataToBeTranslated = remove_dataComponents(content)
 
+   Englishstr = translateContent(dataToBeTranslated)
+   print(Englishstr)
    #gets the data from the html file and adds it to a class array
-   myParser.feed(Englishstr)
-   myTerms = [myParser.dataReturned]
-   # with open("Output.txt", "w") as text_file:
-   #    text_file.write(myParser.dataReturned)
+   myTerms = [Englishstr]
+ 
    #gets the term frequency values for each word in the data
    termFrequencyResults=termFrequency.fit_transform(myTerms)
    myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
@@ -100,10 +136,8 @@ for x in collected_URLs_Train:
    truthCount = 0
    for term in truthList:
       try:
-      #index = [i for i, x in enumerate(termFrequency.vocabulary_) if x == term]
          myVal = myTerms[term]
          truthCount += myVal.get(key=0)
-         #print(myVal.get(key=0))
       except:
          print(term + " not found")
 
@@ -116,7 +150,6 @@ for x in collected_URLs_Train:
          print(term + " not found")
 
    model_train_list.append([falseCount, truthCount])
-   myParser.dataReturned = ""
 
 
 print(model_train_list)
@@ -152,12 +185,13 @@ for x in collected_URLs_Test:
    
    # print(content)
    collected_HTML_Test.append(content)
-   # languageDetected = TextBlob(content)
-   Englishstr = content
+   dataToBeTranslated = remove_dataComponents(content)
+
+   Englishstr = translateContent(dataToBeTranslated)
 
    #gets the data from the html file and adds it to a class array
-   myParser.feed(Englishstr)
-   myTerms = [myParser.dataReturned]
+   #myParser.feed(Englishstr)
+   myTerms = [Englishstr]
    # with open("Output.txt", "w") as text_file:
    #    text_file.write(myParser.dataReturned)
    #gets the term frequency values for each word in the data
@@ -167,10 +201,8 @@ for x in collected_URLs_Test:
    truthCount = 0
    for term in truthList:
       try:
-      #index = [i for i, x in enumerate(termFrequency.vocabulary_) if x == term]
          myVal = myTerms[term]
          truthCount += myVal.get(key=0)
-         #print(myVal.get(key=0))
       except:
          print(term + " not found")
 
@@ -185,11 +217,10 @@ for x in collected_URLs_Test:
    predictionValue = myModel.predict([[falseCount, truthCount]])
    print(predictionValue)
    model_test_list.append([testCounter, predictionValue[0]])
-   myParser.dataReturned = ""
 
-print(model_test_list)
+#print(model_test_list)
 outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
-print(outputDF)
+#print(outputDF)
 outputDF.to_csv('submission.csv', index=False)
 
 #pass in the false count and true count and claim for each article, and corresponding label in another array
