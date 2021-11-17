@@ -12,12 +12,14 @@ from textblob import TextBlob
 
 
 class ParseHTML(HTMLParser):
-   dataReturned = []
+   dataReturned = ""
    def handle_data(self, data):
-      self.dataReturned.append(data)
-      print("Encountered some data  :", data)
+      #self.dataReturned.append(data)
+      self.dataReturned+=data
+      #print("Encountered some data  :", data)
 
-
+truthList = ["true", "truth"]
+falseList = ["false", "fake"]
 options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
@@ -35,7 +37,6 @@ titles = []
 articles = []
 myParser = ParseHTML()
 termFrequency = CountVectorizer()
-htmlString = ''
 counter = 0
 counter2 = 0
 model_df_columns = ["claim", "tf"]
@@ -43,7 +44,7 @@ model_df = pd.DataFrame(columns=model_df_columns)
 
 #parse data.data to get the URLs
 df = pd.read_csv("datasets/data.csv")
-print(df) 
+#print(df) 
 
 # this is how to get specific item from csv data
 # i iterates through the row(number of data entries) and the second array access is the column
@@ -68,25 +69,49 @@ for x in collected_URLs:
       else:
          print('no value found in h1, URL: '+ x)
    
+   # print(content)
    collected_HTML.append(content)
    # languageDetected = TextBlob(content)
    Englishstr = content
-   # if (languageDetected != "en"):
-   #    htmlString = TextBlob(content)
-   #    Englishstr = htmlString.translate(to="EN")
 
    #gets the data from the html file and adds it to a class array
    myParser.feed(Englishstr)
-
+   myTerms = [myParser.dataReturned]
+   # with open("Output.txt", "w") as text_file:
+   #    text_file.write(myParser.dataReturned)
    #gets the term frequency values for each word in the data
-   termFrequencyResults=termFrequency.fit_transform(myParser.dataReturned)
-   print(termFrequency.get_feature_names())
-   print(termFrequencyResults.toarray().sum(axis=0))
+   termFrequencyResults=termFrequency.fit_transform(myTerms)
+   myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
+   truthCount = 0
+   for term in truthList:
+      try:
+      #index = [i for i, x in enumerate(termFrequency.vocabulary_) if x == term]
+         myVal = myTerms[term]
+         truthCount += myVal.get(key=0)
+         #print(myVal.get(key=0))
+      except:
+         print(term + " not found")
 
-   myParser.dataReturned = []
-   htmlString = ''
+   falseCount = 0
+   for term in falseList:
+      try:
+      #index = [i for i, x in enumerate(termFrequency.vocabulary_) if x == term]
+         myVal = myTerms[term]
+         falseCount += myVal.get(key=0)
+         #print(myVal.get(key=0))
+      except:
+         print(term + " not found")
 
+   print("false list", falseCount)
+   print("truth list",  truthCount)
 
+   leaningResult = truthCount + (falseCount * -1)
+   if(leaningResult < 0):
+      print("false leaning")
+   elif(leaningResult > 0):
+      print("true leaning")
+   elif (leaningResult == 0):
+      print("undetermined")
    # print(collected_HTML[counter2])
 
 #store collected HTML into html.json file
@@ -94,19 +119,5 @@ for x in collected_URLs:
 #     json.dump(collected_HTML, f, ensure_ascii=False, indent=4)
 # #close driver
 # driver.close()
-
-# # for element in soup.findAll('header', attrs={'class': 'mod-full-article-header'}):
-# #    title = element.find('h1', attrs={'itemprop': 'name'})
-# #    titles.append(title.text)
-# # df = pd.DataFrame({'Post title': titles})
-# # df.to_csv('posts.csv', index=False, encoding='utf-8')
-
-
-# #find the tags of article contents and implement switch cases
-
-
-# # if soup.find('header'):
-# #    print('found header')
-# #    print('content of header: '+soup.find('header').getText())
 
 
