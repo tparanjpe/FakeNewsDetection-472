@@ -169,55 +169,59 @@ for i in range(len(df_test)):
 #loop through URLs to get data from websites
 for x in collected_URLs_Test:
    testCounter+=1
-   driver.get(x)
-   
-   content = driver.page_source
-   soup = BeautifulSoup(content, features="html.parser")
+   try:
+      driver.get(x)
+      
+      content = driver.page_source
+      soup = BeautifulSoup(content, features="html.parser")
 
-   #check if most of the website titles are in h1 and record how many
-   if soup.find('h1'):
-      # print('found h1')
-      if(soup.find('h1').getText()):
-         titles_Test.append(soup.find('h1').getText()) 
-         print('content of h1: '+ titles_Test[counter2])
-         counter2 = counter2 + 1
-      else:
-         print('no value found in h1, URL: '+ x)
-   
-   # print(content)
-   collected_HTML_Test.append(content)
-   dataToBeTranslated = remove_dataComponents(content)
+      #check if most of the website titles are in h1 and record how many
+      if soup.find('h1'):
+         # print('found h1')
+         if(soup.find('h1').getText()):
+            titles_Test.append(soup.find('h1').getText()) 
+            print('content of h1: '+ titles_Test[counter2])
+            counter2 = counter2 + 1
+         else:
+            print('no value found in h1, URL: '+ x)
+      
+      # print(content)
+      collected_HTML_Test.append(content)
+      dataToBeTranslated = remove_dataComponents(content)
 
-   Englishstr = translateContent(dataToBeTranslated)
+      Englishstr = translateContent(dataToBeTranslated)
 
-   #gets the data from the html file and adds it to a class array
-   #myParser.feed(Englishstr)
-   myTerms = [Englishstr]
-   # with open("Output.txt", "w") as text_file:
-   #    text_file.write(myParser.dataReturned)
-   #gets the term frequency values for each word in the data
-   termFrequencyResults=termFrequency.fit_transform(myTerms)
-   myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
-   # print(myTerms)
-   truthCount = 0
-   for term in truthList:
-      try:
-         myVal = myTerms[term]
-         truthCount += myVal.get(key=0)
-      except:
-         print(term + " not found")
+      #gets the data from the html file and adds it to a class array
+      #myParser.feed(Englishstr)
+      myTerms = [Englishstr]
+      # with open("Output.txt", "w") as text_file:
+      #    text_file.write(myParser.dataReturned)
+      #gets the term frequency values for each word in the data
+      termFrequencyResults=termFrequency.fit_transform(myTerms)
+      myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
+      # print(myTerms)
+      truthCount = 0
+      for term in truthList:
+         try:
+            myVal = myTerms[term]
+            truthCount += myVal.get(key=0)
+         except:
+            print(term + " not found")
 
-   falseCount = 0
-   for term in falseList:
-      try:
-         myVal = myTerms[term]
-         falseCount += myVal.get(key=0)
-      except:
-         print(term + " not found")
+      falseCount = 0
+      for term in falseList:
+         try:
+            myVal = myTerms[term]
+            falseCount += myVal.get(key=0)
+         except:
+            print(term + " not found")
 
-   predictionValue = myModel.predict([[falseCount, truthCount]])
-   print(predictionValue)
-   model_test_list.append([testCounter, predictionValue[0]])
+      predictionValue = myModel.predict([[falseCount, truthCount]])
+      print(predictionValue)
+      model_test_list.append([testCounter, predictionValue[0]])
+   except:
+      print("error thrown")
+      model_test_list.append([testCounter, 3])
 
 #print(model_test_list)
 outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
