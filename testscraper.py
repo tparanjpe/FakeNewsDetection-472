@@ -152,6 +152,7 @@ for x in collected_URLs_Train:
    model_train_list.append([falseCount, truthCount])
 
 
+
 print(model_train_list)
 print(expected_label)
 
