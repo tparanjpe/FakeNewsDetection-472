@@ -1,6 +1,7 @@
 #Importing packages
 from operator import truth
 from bs4.element import Declaration
+from scipy.stats.stats import RelfreqResult
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
@@ -83,6 +84,8 @@ titles_Train = []
 articles_Train = []
 model_train_list = []
 expected_label = []
+labelCounter = 0
+tfInput = []
 #parse data.data to get the URLs
 df_train = pd.read_csv("datasets/dataTrain.csv")
 
@@ -94,8 +97,14 @@ articles_Test = []
 model_test_list = []
 expected_label = []
 testCounter = 0
+testTFInputs = []
 df_test = pd.read_csv("datasets/dataTest.csv")
 
+
+# testTFInputs.append([0, 1])
+# for myPair in testTFInputs:
+#    print(myPair)
+#    print([myPair])
 # this is how to get specific item from csv data
 # i iterates through the row(number of data entries) and the second array access is the column
 for i in range(len(df_train)):
@@ -105,59 +114,73 @@ for i in range(len(df_train)):
 
 #loop through URLs to get data from websites
 for x in collected_URLs_Train:
-   driver.get(x)
+   label = expected_label[labelCounter]
+   labelCounter+=1
+
+   try:
+      
+      driver.get(x)
+      
+      content = driver.page_source
+      soup = BeautifulSoup(content, features="html.parser")
+
+      #check if most of the website titles are in h1 and record how many
+      if soup.find('h1'):
+         # print('found h1')
+         if(soup.find('h1').getText()):
+            titles_Train.append(soup.find('h1').getText()) 
+            print('content of h1: '+ titles_Train[counter])
+            counter = counter + 1
+         else:
+            print('no value found in h1, URL: '+ x)
+      
+      # print(content)
+      collected_HTML_Train.append(content)
+      dataToBeTranslated = remove_dataComponents(content)
+
+      Englishstr = translateContent(dataToBeTranslated)
+      print(Englishstr)
+      #gets the data from the html file and adds it to a class array
+      myTerms = [Englishstr]
    
-   content = driver.page_source
-   soup = BeautifulSoup(content, features="html.parser")
+      #gets the term frequency values for each word in the data
+      termFrequencyResults=termFrequency.fit_transform(myTerms)
+      myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
+      # print(myTerms)
+      truthCount = 0
+      for term in truthList:
+         try:
+            myVal = myTerms[term]
+            truthCount += myVal.get(key=0)
+         except:
+            print(term + " not found")
 
-   #check if most of the website titles are in h1 and record how many
-   if soup.find('h1'):
-      # print('found h1')
-      if(soup.find('h1').getText()):
-         titles_Train.append(soup.find('h1').getText()) 
-         print('content of h1: '+ titles_Train[counter])
-         counter = counter + 1
-      else:
-         print('no value found in h1, URL: '+ x)
-   
-   # print(content)
-   collected_HTML_Train.append(content)
-   dataToBeTranslated = remove_dataComponents(content)
-
-   Englishstr = translateContent(dataToBeTranslated)
-   print(Englishstr)
-   #gets the data from the html file and adds it to a class array
-   myTerms = [Englishstr]
- 
-   #gets the term frequency values for each word in the data
-   termFrequencyResults=termFrequency.fit_transform(myTerms)
-   myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
-   # print(myTerms)
-   truthCount = 0
-   for term in truthList:
-      try:
-         myVal = myTerms[term]
-         truthCount += myVal.get(key=0)
-      except:
-         print(term + " not found")
-
-   falseCount = 0
-   for term in falseList:
-      try:
-         myVal = myTerms[term]
-         falseCount += myVal.get(key=0)
-      except:
-         print(term + " not found")
-
-   model_train_list.append([falseCount, truthCount])
+      falseCount = 0
+      for term in falseList:
+         try:
+            myVal = myTerms[term]
+            falseCount += myVal.get(key=0)
+         except:
+            print(term + " not found")
+      tfInput.append([falseCount, truthCount])
+      model_train_list.append([falseCount, truthCount, label])
+   except:
+      #error was thrown, we can scrap the train data for this one.
+      print("error was thrown, scraping train data")
 
 
+#this will write all the input data to the csv. 
+train_data = pd.DataFrame(model_train_list, columns=["truthcount","falsecount", "expectedLabel"])
+train_data.to_csv('train_dataInput.csv', index=False)
 
-print(model_train_list)
-print(expected_label)
+readInputDF = pd.read_csv('train_dataInput.csv')
+labelsList = readInputDF["expectedLabel"].tolist()
+
+print(tfInput)
+print(labelsList)
 
 myModel = KNeighborsClassifier(n_neighbors=4)
-myModel.fit(model_train_list, expected_label)
+myModel.fit(tfInput, labelsList)
 print(myModel)
 
 # this is how to get specific item from csv data
@@ -216,13 +239,23 @@ for x in collected_URLs_Test:
          except:
             print(term + " not found")
 
-      predictionValue = myModel.predict([[falseCount, truthCount]])
-      print(predictionValue)
-      model_test_list.append([testCounter, predictionValue[0]])
+      testTFInputs.append([falseCount, truthCount])
+      
+      
    except:
       print("error thrown")
-      model_test_list.append([testCounter, 3])
+      testTFInputs.append([-1, -1])
+      
 
+predictionCounter = 1
+for myPair in testTFInputs:
+   if(myPair[0] == -1 and myPair[1] == -1):
+      model_test_list.append([testCounter, 3])
+   else:
+      predictionValue = myModel.predict([myPair])
+      print(predictionValue)
+      model_test_list.append([testCounter, predictionValue[0]])
+      
 #print(model_test_list)
 outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
 #print(outputDF)
