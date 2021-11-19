@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
+import csv
 from html.parser import HTMLParser
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
@@ -88,7 +89,12 @@ labelCounter = 0
 tfInput = []
 #parse data.data to get the URLs
 df_train = pd.read_csv("datasets/dataTrain.csv")
+headers = ["truthcount","falsecount", "expectedLabel"]
 
+with open('train_dataInput.csv', 'w', encoding='UTF8') as file:
+   writer = csv.writer(file)
+   writer.writerow(headers)
+   file.close()
 #test variables
 collected_URLs_Test = []
 collected_HTML_Test = []
@@ -98,7 +104,8 @@ model_test_list = []
 expected_label = []
 testCounter = 0
 testTFInputs = []
-df_test = pd.read_csv("datasets/dataTest.csv")
+df_test = pd.read_csv("datasets/test.csv")
+
 
 
 # testTFInputs.append([0, 1])
@@ -164,6 +171,11 @@ for x in collected_URLs_Train:
             print(term + " not found")
       tfInput.append([falseCount, truthCount])
       model_train_list.append([falseCount, truthCount, label])
+      with open('train_dataInput.csv', 'a+', encoding='UTF8') as file:
+         writer = csv.writer(file)
+         writer.writerow([falseCount, truthCount, label])
+         file.close()
+
    except:
       #error was thrown, we can scrap the train data for this one.
       print("error was thrown, scraping train data")
@@ -245,21 +257,26 @@ for x in collected_URLs_Test:
    except:
       print("error thrown")
       testTFInputs.append([-1, -1])
-      
 
-predictionCounter = 1
-for myPair in testTFInputs:
-   if(myPair[0] == -1 and myPair[1] == -1):
-      model_test_list.append([testCounter, 3])
-   else:
-      predictionValue = myModel.predict([myPair])
-      print(predictionValue)
-      model_test_list.append([testCounter, predictionValue[0]])
-      
-#print(model_test_list)
-outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
-#print(outputDF)
-outputDF.to_csv('submission.csv', index=False)
+#this will write all the input data to the csv. 
+testInputs = pd.DataFrame(testTFInputs, columns=["truthcount","falsecount"])
+testInputs.to_csv('test_dataInput.csv', index=False)    
+
+
+
+# predictionCounter = 1
+# for myPair in testTFInputs:
+#    if(myPair[0] == -1 and myPair[1] == -1):
+#       model_test_list.append([testCounter, 3])
+#    else:
+#       predictionValue = myModel.predict([myPair])
+#       print(predictionValue)
+#       model_test_list.append([testCounter, predictionValue[0]])
+
+# #print(model_test_list)
+# outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
+# #print(outputDF)
+# outputDF.to_csv('submission.csv', index=False)
 
 #pass in the false count and true count and claim for each article, and corresponding label in another array
 #knearest neighbors with btoh arrays
