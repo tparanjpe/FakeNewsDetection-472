@@ -134,11 +134,15 @@ for x in collected_URLs:
             writer.writerow([sa_score])
             file.close()
     else:
+        counter3 = 0
+        for x in titles:
+            result = (ts.google(x))
+            titles[counter3] = result
+            counter3 = counter3 + 1
         s = ''.join(titles)
-        result = (ts.google(s))
-        sa_score = afinn.score(result)
+        sa_score = afinn.score(s)
         print("sa_score: ", sa_score)
-
+        
         with open('sa_score.csv', 'a+', encoding='UTF8') as file:
              writer = csv.writer(file)
              writer.writerow([sa_score])
