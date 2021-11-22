@@ -45,7 +45,7 @@ collected_source = []
 df_train = pd.read_csv("datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
-with open('testing.csv', 'w', encoding='UTF8') as file:
+with open('train_data_TM_claim.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(headers)
    file.close()
@@ -98,31 +98,36 @@ def remove_string_special_characters(s):
 
 
 for x in collected_claim:
-    myTerms = [x]
-    label = expected_label[labelCounter]
-    labelCounter+=1
-    #gets the term frequency values for each word in the data
-    termFrequencyResults=termFrequency.fit_transform(myTerms)
-    myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
-    # print(myTerms)
-    truthCount = 0
-    for term in truthList:
-        try:
-            myVal = myTerms[term]
-            truthCount += myVal.get(key=0)
-        except:
-            print(term + " not found")
+    try:
+        myTerms = [x]
+        label = expected_label[labelCounter]
+        labelCounter+=1
+        #gets the term frequency values for each word in the data
+        termFrequencyResults=termFrequency.fit_transform(myTerms)
+        myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
+        # print(myTerms)
+        truthCount = 0
+        for term in truthList:
+            try:
+                myVal = myTerms[term]
+                truthCount += myVal.get(key=0)
+            except:
+                print(term + " not found")
 
-        falseCount = 0
+            falseCount = 0
         for term in falseList:
             try:
                 myVal = myTerms[term]
                 falseCount += myVal.get(key=0)
             except:
                 print(term + " not found")
-    tfInput.append([falseCount, truthCount])
-    model_train_list.append([falseCount, truthCount, label])
-    with open('testing.csv', 'a+', encoding='UTF8') as file:
-        writer = csv.writer(file)
-        writer.writerow([falseCount, truthCount, label])
-        file.close()
+        tfInput.append([falseCount, truthCount])
+        model_train_list.append([falseCount, truthCount, label])
+        with open('train_data_TM_claim.csv', 'a+', encoding='UTF8') as file:
+            writer = csv.writer(file)
+            writer.writerow([falseCount, truthCount, label])
+            file.close()
+    except:
+        #error was thrown, we can scrap the train data for this one.
+        print("error was thrown, scraping train data")
+
