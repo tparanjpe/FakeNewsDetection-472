@@ -128,6 +128,11 @@ for x in collected_claim:
             writer.writerow([falseCount, truthCount, label])
             file.close()
     except:
-        #error was thrown, we can scrap the train data for this one.
-        print("error was thrown, scraping train data")
+      #error was thrown, we can scrap the train data for this one.
+      print("error was thrown, scraping train data")
+      tfInput.append([-1, -1])
+      with open('train_dataInput4.csv', 'a+', encoding='UTF8') as file:
+         writer = csv.writer(file)
+         writer.writerow([falseCount, truthCount, label])
+         file.close()
 
