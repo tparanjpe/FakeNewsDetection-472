@@ -14,7 +14,10 @@ options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
 
-driver = webdriver.Chrome("/Users/stephanie/Downloads/chromedriver")
+chromeOptions = webdriver.ChromeOptions()
+chromeOptions.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe" 
+driver = webdriver.Chrome("C:\\Users\\tarap\\Dropbox\\My PC (LAPTOP-EFB1H1KE)\\Desktop\\CSE472\\project2\\chromedriver.exe",  options=chromeOptions)
+
 
 content = driver.page_source
 soup = BeautifulSoup(content, features="html.parser")
@@ -29,7 +32,7 @@ articles = []
 
 counter = 0
 counter2 = 0
-df_train = pd.read_csv("few.csv")
+df_train = pd.read_csv("../datasets/few.csv")
 
 
 def remove_dataComponents(htmlContent):
@@ -129,7 +132,7 @@ for x in collected_URLs:
         sa_score = afinn.score(Englishstr)
         print("sa_score: ", sa_score)
 
-        with open('sa_score.csv', 'a+', encoding='UTF8') as file:
+        with open('../createdCSVs/sa_score.csv', 'a+', encoding='UTF8') as file:
             writer = csv.writer(file)
             writer.writerow([sa_score])
             file.close()
@@ -143,7 +146,7 @@ for x in collected_URLs:
         sa_score = afinn.score(s)
         print("sa_score: ", sa_score)
         
-        with open('sa_score.csv', 'a+', encoding='UTF8') as file:
+        with open('../createdCSVs/sa_score.csv', 'a+', encoding='UTF8') as file:
              writer = csv.writer(file)
              writer.writerow([sa_score])
              file.close()

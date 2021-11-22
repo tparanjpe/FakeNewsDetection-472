@@ -92,10 +92,10 @@ expected_label = []
 labelCounter = 0
 tfInput = []
 #parse data.data to get the URLs
-df_train = pd.read_csv("datasets/train.csv")
+df_train = pd.read_csv("../datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
-with open('train_dataInput4.csv', 'w', encoding='UTF8') as file:
+with open('../createdCSVs/train_dataInput4.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(headers)
    file.close()
@@ -108,7 +108,7 @@ model_test_list = []
 expected_label = []
 testCounter = 0
 testTFInputs = []
-df_test = pd.read_csv("datasets/test.csv")
+df_test = pd.read_csv("../datasets/test.csv")
 
 
 

@@ -19,7 +19,7 @@ from sklearn import metrics
  #Country (mentioned),Review Date,Claim,Source,Fact-checked Article
 #colnames = ['country', 'review', 'claim', 'source', 'fact_checked_article']
 #pima_df = pd.read_csv("few.data", names= colnames)
-pima_df = pd.read_csv("few.data")
+pima_df = pd.read_csv("../datasets/few.data")
  
 X = pima_df.drop("Outcome", axis = 1)
 Y = pima_df[ ["outcome"] ]

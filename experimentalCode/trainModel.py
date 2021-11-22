@@ -21,12 +21,12 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 
 
 headers = ['Id','Predicted']
-with open('BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
+with open('../highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
    writer.writerow(headers)
    file.close()
 tfList = []
-readInputDF = pd.read_csv('train_dataInputSource.csv')
+readInputDF = pd.read_csv('../createdCSVs/train_dataInputSource.csv')
 labelsList = readInputDF["expected_label"].tolist()
 
 readInputDF.drop(columns=readInputDF.columns[-1], 
@@ -59,11 +59,11 @@ print(myModel)
 #     counter+=1
 
 counter = 1 
-readTestDF = pd.read_csv('test_dataInputSource.csv')
+readTestDF = pd.read_csv('../createdCSVs/test_dataInputSource.csv')
 for index, row in readTestDF.iterrows():
     predValueArray = myModel.predict([row])
     predictionValue = predValueArray[0]
-    with open('BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
+    with open('../highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
         writer = csv.writer(file, lineterminator='\n')
         writer.writerow([counter, predictionValue])
         file.close()

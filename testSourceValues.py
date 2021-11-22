@@ -12,49 +12,53 @@ from html.parser import HTMLParser
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 import translators as ts
+from sklearn.naive_bayes import MultinomialNB
 
-# class ParseHTML(HTMLParser):
-#    dataReturned = ""
-#    def handle_data(self, data):
-#       #self.dataReturned.append(data)
-#       self.dataReturned+=data
-#       #print("Encountered some data  :", data)
 
-# def remove_dataComponents(htmlContent):
-#    mySoup = BeautifulSoup(htmlContent, "html.parser")
-#    for data in mySoup(['style', 'script']):
-#       data.decompose()
-#    return ' '.join(soup.stripped_strings)
 
-# #contentToTranslate:String with HTML data
-# def translateContent(x):
-#    translatedString = ""
-#    translatedSentences = []
-#    if len(x) > 100:
-#          split_strings = []
-#          temp = ''
-#          for index in range(0, len(x)):
-#             if x[index] != '.' and x[index] != '!':
-#                temp += x[index]
-#                # print(temp)
-#             else:
-#                split_strings.append(temp)
-#                temp = ''
-#          #print(split_strings)
-#          for y in split_strings:
-#             #print('orginal text: ',y)
-#             result = (ts.google(y))
-#             #print('translated text: ', result)
-#             translatedSentences.append(result)
-#             translatedString+=result
-#    else:
-#       #print('orginal text: ',x)
-#       result = (ts.google(x))
-#       #print('translated text: ', result)
-#       translatedSentences.append(result)
-#       translatedString+=result
+
+class ParseHTML(HTMLParser):
+   dataReturned = ""
+   def handle_data(self, data):
+      #self.dataReturned.append(data)
+      self.dataReturned+=data
+      #print("Encountered some data  :", data)
+
+def remove_dataComponents(htmlContent):
+   mySoup = BeautifulSoup(htmlContent, "html.parser")
+   for data in mySoup(['style', 'script']):
+      data.decompose()
+   return ' '.join(soup.stripped_strings)
+
+#contentToTranslate:String with HTML data
+def translateContent(x):
+   translatedString = ""
+   translatedSentences = []
+   if len(x) > 100:
+         split_strings = []
+         temp = ''
+         for index in range(0, len(x)):
+            if x[index] != '.' and x[index] != '!':
+               temp += x[index]
+               # print(temp)
+            else:
+               split_strings.append(temp)
+               temp = ''
+         #print(split_strings)
+         for y in split_strings:
+            #print('orginal text: ',y)
+            result = (ts.google(y))
+            #print('translated text: ', result)
+            translatedSentences.append(result)
+            translatedString+=result
+   else:
+      #print('orginal text: ',x)
+      result = (ts.google(x))
+      #print('translated text: ', result)
+      translatedSentences.append(result)
+      translatedString+=result
    
-#    return translatedString
+   return translatedString
 
 
 truthList = ["true", "truth"]
@@ -64,12 +68,12 @@ options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
 
-# chromeOptions = webdriver.ChromeOptions()
-# chromeOptions.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe" 
-# driver = webdriver.Chrome("C:\\Users\\tarap\\Dropbox\\My PC (LAPTOP-EFB1H1KE)\\Desktop\\CSE472\\project2\\chromedriver.exe",  options=chromeOptions)
+chromeOptions = webdriver.ChromeOptions()
+chromeOptions.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe" 
+driver = webdriver.Chrome("C:\\Users\\tarap\\Dropbox\\My PC (LAPTOP-EFB1H1KE)\\Desktop\\CSE472\\project2\\chromedriver.exe",  options=chromeOptions)
 
-# content = driver.page_source
-# soup = BeautifulSoup(content, features="html.parser")
+content = driver.page_source
+soup = BeautifulSoup(content, features="html.parser")
 
 
 #myParser = ParseHTML()
@@ -114,15 +118,15 @@ for i in range(len(df_test)):
 
 print(collected_source)
 
-# with open('test_dataInputSource.csv', 'w', encoding='UTF8') as file:
-#    writer = csv.writer(file, lineterminator='\n')
-#    writer.writerow(collected_source)
-#    file.close()
+with open('createdCSVs/test_dataInputSource.csv', 'w', encoding='UTF8') as file:
+   writer = csv.writer(file, lineterminator='\n')
+   writer.writerow(collected_source)
+   file.close()
 
 trainheaders = collected_source
 trainheaders.append('expected_label')
 
-with open('train_dataInputSource.csv', 'w', encoding='UTF8') as file:
+with open('createdCSVs/train_dataInputSource.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
    writer.writerow(trainheaders)
    file.close()
@@ -137,26 +141,58 @@ for index, row in df_train.iterrows():
         else:
             rowToSet.append(0)
     rowToSet.append(labelGiven)
-    with open('train_dataInputSource.csv', 'a+', encoding='UTF8') as file:
+    with open('createdCSVs/train_dataInputSource.csv', 'a+', encoding='UTF8') as file:
         writer = csv.writer(file, lineterminator='\n')
         writer.writerow(rowToSet)
         file.close()
 
 
-# for index, row in df_test.iterrows():
-#     rowToSet = []
-#     sourceGiven = row[3]
+for index, row in df_test.iterrows():
+    rowToSet = []
+    sourceGiven = row[3]
     
-#     for value in collected_source:
+    for value in collected_source:
         
-#         if value == sourceGiven:
-#             rowToSet.append(1)
-#         else:
-#             rowToSet.append(0)
+        if value == sourceGiven:
+            rowToSet.append(1)
+        else:
+            rowToSet.append(0)
 
-#     with open('test_dataInputSource.csv', 'a+', encoding='UTF8') as file:
-#         writer = csv.writer(file, lineterminator='\n')
-#         writer.writerow(rowToSet)
-#         file.close()
+    with open('createdCSVs/test_dataInputSource.csv', 'a+', encoding='UTF8') as file:
+        writer = csv.writer(file, lineterminator='\n')
+        writer.writerow(rowToSet)
+        file.close()
 
 
+headers = ['Id','Predicted']
+with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
+   writer = csv.writer(file, lineterminator='\n')
+   writer.writerow(headers)
+   file.close()
+tfList = []
+readInputDF = pd.read_csv('createdCSVs/train_dataInputSource.csv')
+labelsList = readInputDF["expected_label"].tolist()
+
+readInputDF.drop(columns=readInputDF.columns[-1], 
+        axis=1, 
+        inplace=True)
+
+for index, row in readInputDF.iterrows():
+    tfList.append(row)
+
+
+myModel = MultinomialNB(alpha=0.5)
+myModel.fit(tfList, labelsList)
+print(myModel)
+
+
+counter = 1 
+readTestDF = pd.read_csv('createdCSVs/test_dataInputSource.csv')
+for index, row in readTestDF.iterrows():
+    predValueArray = myModel.predict([row])
+    predictionValue = predValueArray[0]
+    with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
+        writer = csv.writer(file, lineterminator='\n')
+        writer.writerow([counter, predictionValue])
+        file.close()
+    counter+=1

@@ -42,10 +42,10 @@ tfInput = []
 collected_source = []
 
 # parse data.data to get the URLs
-df_train = pd.read_csv("datasets/train.csv")
+df_train = pd.read_csv("../datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
-with open('train_data_TM_claim.csv', 'w', encoding='UTF8') as file:
+with open('../createdCSVs/train_data_TM_claim.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(headers)
    file.close()
@@ -59,7 +59,7 @@ model_test_list = []
 expected_label = []
 testCounter = 0
 testTFInputs = []
-df_test = pd.read_csv("datasets/test.csv")
+df_test = pd.read_csv("../datasets/test.csv")
 collected_claim = []
 collected_label = []
 collected_claim_test = []
@@ -123,7 +123,7 @@ for x in collected_claim:
                 print(term + " not found")
         tfInput.append([falseCount, truthCount])
         model_train_list.append([falseCount, truthCount, label])
-        with open('train_data_TM_claim.csv', 'a+', encoding='UTF8') as file:
+        with open('../createdCSVs/train_data_TM_claim.csv', 'a+', encoding='UTF8') as file:
             writer = csv.writer(file)
             writer.writerow([falseCount, truthCount, label])
             file.close()
@@ -131,7 +131,7 @@ for x in collected_claim:
       #error was thrown, we can scrap the train data for this one.
       print("error was thrown, scraping train data")
       tfInput.append([-1, -1])
-      with open('train_dataInput4.csv', 'a+', encoding='UTF8') as file:
+      with open('../createdCSVs/train_data_TM_claim.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
          writer.writerow([-1, -1, label])
          file.close()
