@@ -133,6 +133,6 @@ for x in collected_claim:
       tfInput.append([-1, -1])
       with open('train_dataInput4.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
-         writer.writerow([falseCount, truthCount, label])
+         writer.writerow([-1, -1, label])
          file.close()
 
