@@ -20,14 +20,14 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 
 
 
-headers = ['Id','Predicted']
-with open('../highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
+submissionHeader = ['Id','Predicted']
+with open('highestScoringSolutions/BESTofficialSubmissionLR.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
-   writer.writerow(headers)
+   writer.writerow(submissionHeader)
    file.close()
 tfList = []
-readInputDF = pd.read_csv('../createdCSVs/train_dataInputSource.csv')
-labelsList = readInputDF["expected_label"].tolist()
+readInputDF = pd.read_csv('createdCSVs/train_data.csv')
+labelsList = readInputDF["expectedLabel"].tolist()
 
 readInputDF.drop(columns=readInputDF.columns[-1], 
         axis=1, 
@@ -36,34 +36,17 @@ readInputDF.drop(columns=readInputDF.columns[-1],
 for index, row in readInputDF.iterrows():
     tfList.append(row)
 
-#myModel = KNeighborsClassifier(n_neighbors=4)
-#myModel = LogisticRegression(solver='liblinear')
-#myModel = LogisticRegression(solver='liblinear', C=0.01)
-myModel = MultinomialNB(alpha=0.5)
-#myModel = PassiveAggressiveClassifier()
+myModel = LogisticRegression(solver='liblinear', C=0.01)
 myModel.fit(tfList, labelsList)
 print(myModel)
 
-# counter = 1
-# readTestDF = pd.read_csv('test_dataInput.csv')
-# for tValue, fValue in zip(readTestDF.truthcount, readTestDF.falsecount):
-#     if tValue == -1 and fValue == -1:
-#         predictionValue = 0
-#     else:
-#         predValueArray = myModel.predict([[tValue, fValue]])
-#         predictionValue = predValueArray[0]
-#     with open('officialSubmissionTestPAC.csv', 'a+', encoding='UTF8') as file:
-#         writer = csv.writer(file, lineterminator='\n')
-#         writer.writerow([counter, predictionValue])
-#         file.close()
-#     counter+=1
 
 counter = 1 
-readTestDF = pd.read_csv('../createdCSVs/test_dataInputSource.csv')
+readTestDF = pd.read_csv('createdCSVs/test_dataInput.csv')
 for index, row in readTestDF.iterrows():
     predValueArray = myModel.predict([row])
     predictionValue = predValueArray[0]
-    with open('../highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
+    with open('highestScoringSolutions/BESTofficialSubmissionLR.csv', 'a+', encoding='UTF8') as file:
         writer = csv.writer(file, lineterminator='\n')
         writer.writerow([counter, predictionValue])
         file.close()

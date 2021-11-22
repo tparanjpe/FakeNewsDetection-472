@@ -11,15 +11,9 @@ import json
 import csv
 from html.parser import HTMLParser
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 import translators as ts
 
-# class ParseHTML(HTMLParser):
-#    dataReturned = ""
-#    def handle_data(self, data):
-#       #self.dataReturned.append(data)
-#       self.dataReturned+=data
-#       #print("Encountered some data  :", data)
 
 def remove_dataComponents(htmlContent):
    mySoup = BeautifulSoup(htmlContent, "html.parser")
@@ -88,10 +82,15 @@ expected_label = []
 labelCounter = 0
 tfInput = []
 #parse data.data to get the URLs
-df_train = pd.read_csv("../datasets/train.csv")
+df_train = pd.read_csv("datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
-with open('../createdCSVs/train_dataInput4.csv', 'w', encoding='UTF8') as file:
+with open('createdCSVs/train_data.csv', 'w', encoding='UTF8') as file:
+   writer = csv.writer(file)
+   writer.writerow(headers)
+   file.close()
+
+with open('createdCSVs/test_dataInput.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(headers)
    file.close()
@@ -104,16 +103,11 @@ model_test_list = []
 expected_label = []
 testCounter = 0
 testTFInputs = []
-df_test = pd.read_csv("../datasets/test.csv")
+df_test = pd.read_csv("datasets/test.csv")
 
 
 
-# testTFInputs.append([0, 1])
-# for myPair in testTFInputs:
-#    print(myPair)
-#    print([myPair])
-# this is how to get specific item from csv data
-# i iterates through the row(number of data entries) and the second array access is the column
+
 for i in range(len(df_train)):
    collected_URLs_Train.append(df_train.values[i][5]) 
    expected_label.append(int(df_train.values[i][4]))
@@ -172,7 +166,7 @@ for x in collected_URLs_Train:
             print(term + " not found")
       tfInput.append([falseCount, truthCount])
       model_train_list.append([falseCount, truthCount, label])
-      with open('../createdCSVs/train_dataInput4.csv', 'a+', encoding='UTF8') as file:
+      with open('createdCSVs/train_data.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
          writer.writerow([falseCount, truthCount, label])
          file.close()
@@ -182,19 +176,7 @@ for x in collected_URLs_Train:
       print("error was thrown, scraping train data")
 
 
-#this will write all the input data to the csv. 
-train_data = pd.DataFrame(model_train_list, columns=["truthcount","falsecount", "expectedLabel"])
-train_data.to_csv('../createdCSVs/train_dataInput.csv', index=False)
 
-readInputDF = pd.read_csv('../createdCSVs/train_dataInput.csv')
-labelsList = readInputDF["expectedLabel"].tolist()
-
-print(tfInput)
-print(labelsList)
-
-myModel = KNeighborsClassifier(n_neighbors=4)
-myModel.fit(tfInput, labelsList)
-print(myModel)
 
 # this is how to get specific item from csv data
 # i iterates through the row(number of data entries) and the second array access is the column
@@ -253,32 +235,49 @@ for x in collected_URLs_Test:
             print(term + " not found")
 
       testTFInputs.append([falseCount, truthCount])
-      
+      with open('createdCSVs/test_dataInput.csv', 'a+', encoding='UTF8') as file:
+         writer = csv.writer(file)
+         writer.writerow([falseCount, truthCount])
+         file.close()
       
    except:
       print("error thrown")
-      testTFInputs.append([-1, -1])
-
-#this will write all the input data to the csv. 
-testInputs = pd.DataFrame(testTFInputs, columns=["truthcount","falsecount"])
-testInputs.to_csv('../createdCSVs/test_dataInput.csv', index=False)    
-
+      with open('createdCSVs/test_dataInput.csv', 'a+', encoding='UTF8') as file:
+         writer = csv.writer(file)
+         writer.writerow([-1, -1])
+         file.close()
 
 
-predictionCounter = 1
-for myPair in testTFInputs:
-   if(myPair[0] == -1 and myPair[1] == -1):
-      model_test_list.append([testCounter, 3])
-   else:
-      predictionValue = myModel.predict([myPair])
-      print(predictionValue)
-      model_test_list.append([testCounter, predictionValue[0]])
 
-#print(model_test_list)
-outputDF = pd.DataFrame(model_test_list, columns=["Id","Predicted"])
-#print(outputDF)
-outputDF.to_csv('../createdCSVs/submission.csv', index=False)
 
-#pass in the false count and true count and claim for each article, and corresponding label in another array
-#knearest neighbors with btoh arrays
-#run same pre-processing on test data, and pass that into the model to predict result
+submissionHeader = ['Id','Predicted']
+with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
+   writer = csv.writer(file, lineterminator='\n')
+   writer.writerow(submissionHeader)
+   file.close()
+tfList = []
+readInputDF = pd.read_csv('createdCSVs/train_data.csv')
+labelsList = readInputDF["expectedLabel"].tolist()
+
+readInputDF.drop(columns=readInputDF.columns[-1], 
+        axis=1, 
+        inplace=True)
+
+for index, row in readInputDF.iterrows():
+    tfList.append(row)
+
+myModel = LogisticRegression(solver='liblinear', C=0.01)
+myModel.fit(tfList, labelsList)
+print(myModel)
+
+
+counter = 1 
+readTestDF = pd.read_csv('createdCSVs/test_dataInput.csv')
+for index, row in readTestDF.iterrows():
+    predValueArray = myModel.predict([row])
+    predictionValue = predValueArray[0]
+    with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
+        writer = csv.writer(file, lineterminator='\n')
+        writer.writerow([counter, predictionValue])
+        file.close()
+    counter+=1
