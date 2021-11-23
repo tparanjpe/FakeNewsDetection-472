@@ -1,7 +1,7 @@
 # Fake News Detection Using NLP Techniques and Machine Learning
 
->  CSE472 Social Media Mining
->  By Tara Paranjpe and Stephanie Lee
+### CSE472 Social Media Mining
+### By Tara Paranjpe and Stephanie Lee
 
 ## Run instructions
 There are 2 main python files:
