@@ -2,9 +2,10 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: This file runs the model with source obtained from dataset and uses Naive Bayes classification model
 '''
 
+#import packages
 from operator import truth
 from bs4.element import Declaration
 from scipy.stats.stats import RelfreqResult
@@ -68,6 +69,7 @@ def translateContent(x):
 truthList = ["true", "truth"]
 falseList = ["false", "fake"]
 
+# selenium webdriver settings
 options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
@@ -96,9 +98,7 @@ labelCounter = 0
 tfInput = []
 collected_source = []
 
-#parse data.data to get the URLs
 df_train = pd.read_csv("datasets/train.csv")
-
 
 #test variables
 collected_URLs_Test = []
@@ -111,11 +111,11 @@ testCounter = 0
 testTFInputs = []
 df_test = pd.read_csv("datasets/test.csv")
 
-
+#iterate through the training df and get the column values for the label and source
 for i in range(len(df_train)):
     if(df_train.values[i][3] not in collected_source):
         collected_source.append(df_train.values[i][3])
-
+#iterate through the testing df and get the column values for the label and source
 for i in range(len(df_test)):
     if(df_test.values[i][3] not in collected_source):
         collected_source.append(df_test.values[i][3])
@@ -129,12 +129,13 @@ with open('createdCSVs/test_dataInputSource.csv', 'w', encoding='UTF8') as file:
 
 trainheaders = collected_source
 trainheaders.append('expected_label')
-
+#write header of csv to file
 with open('createdCSVs/train_dataInputSource.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
    writer.writerow(trainheaders)
    file.close()
 
+# create feature vector
 for index, row in df_train.iterrows():
     rowToSet = []
     sourceGiven = row[3]
@@ -167,13 +168,14 @@ for index, row in df_test.iterrows():
         writer.writerow(rowToSet)
         file.close()
 
-
+#write header to submission csv
 headers = ['Id','Predicted']
 with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
    writer.writerow(headers)
    file.close()
 tfList = []
+
 readInputDF = pd.read_csv('createdCSVs/train_dataInputSource.csv')
 labelsList = readInputDF["expected_label"].tolist()
 
@@ -184,12 +186,12 @@ readInputDF.drop(columns=readInputDF.columns[-1],
 for index, row in readInputDF.iterrows():
     tfList.append(row)
 
-
+# set classification model to naive bayes and fit
 myModel = MultinomialNB(alpha=0.5)
 myModel.fit(tfList, labelsList)
 print(myModel)
 
-
+#write to csv
 counter = 1 
 readTestDF = pd.read_csv('createdCSVs/test_dataInputSource.csv')
 for index, row in readTestDF.iterrows():

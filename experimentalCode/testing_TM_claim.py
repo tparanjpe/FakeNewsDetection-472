@@ -2,7 +2,7 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: This file runs term frequency on the claims
 '''
 
 from sklearn import metrics
@@ -28,10 +28,7 @@ from sklearn.metrics import classification_report
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
-# from nltk.tokenize import word_tokenize
 
-
-# myParser = ParseHTML()
 termFrequency = CountVectorizer()
 counter = 0
 counter2 = 0
@@ -46,8 +43,11 @@ expected_label = []
 labelCounter = 0
 tfInput = []
 collected_source = []
+collected_claim = []
+collected_label = []
+collected_claim_test = []
 
-# parse data.data to get the URLs
+# parse train.csv to get the URLs
 df_train = pd.read_csv("../datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
@@ -66,43 +66,21 @@ expected_label = []
 testCounter = 0
 testTFInputs = []
 df_test = pd.read_csv("../datasets/test.csv")
-collected_claim = []
-collected_label = []
-collected_claim_test = []
 
+# get the claims and labels from train dataset
 for i in range(len(df_train)):
     collected_claim.append(df_train.values[i][2])
     expected_label.append(int(df_train.values[i][4]))
-
+# get the claims from test dataset
 for i in range(len(df_test)):
     collected_claim_test.append(df_train.values[i][2])
 
 
-# print(collected_claim)
-
+# truth and false list
 truthList = ["true", "truth", "real", "accurate", "correct", "not false", "not fake"]
 falseList = ["false", "fake", "wrong", "inaccurate", "not true", "not fake"]
 
-# referenced from here:
-# https://www.geeksforgeeks.org/tf-idf-for-bigrams-trigrams/
-# Preprocessing
-
-def remove_string_special_characters(s):
-
-    # removes special characters with ' '
-    stripped = re.sub('[^a-zA-z\s]', '', s)
-    stripped = re.sub('_', '', stripped)
-
-    # Change any white space to one space
-    stripped = re.sub('\s+', ' ', stripped)
-
-    # Remove start and end white spaces
-    stripped = stripped.strip()
-    if stripped != '':
-        return stripped.lower()
-
-
-
+# Go through each claim and run term frequency
 for x in collected_claim:
     try:
         myTerms = [x]

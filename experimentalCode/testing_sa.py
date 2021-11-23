@@ -2,25 +2,25 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: This file tests Sentiment Analysis using afinn on website contents, where header tags are prioritized. 
 '''
-
+#import afinn packages
 from afinn import Afinn
 afinn = Afinn(language='en')
 
+#import the rest of packages
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
 import csv
-
 import translators as ts
 
+#selenium webdriver settings
 options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
-
 chromeOptions = webdriver.ChromeOptions()
 chromeOptions.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe" 
 driver = webdriver.Chrome("C:\\Users\\tarap\\Dropbox\\My PC (LAPTOP-EFB1H1KE)\\Desktop\\CSE472\\project2\\chromedriver.exe",  options=chromeOptions)
@@ -76,14 +76,14 @@ def translateContent(x):
       translatedString+=result
    return translatedString
 
-
+# get the fact check website URLs from train dataset
 for i in range(len(df_train)):
    collected_URLs.append(df_train.values[i][5]) 
 #    expected_label.append(int(df_train.values[i][4]))
 
 
 
-#loop through URLs to get data from websites
+#loop through URLs to get content from websites
 for x in collected_URLs:
     print("URL: ", x)
     driver.get(x)
@@ -92,7 +92,8 @@ for x in collected_URLs:
     soup = BeautifulSoup(content, features="html.parser")
 
     titlefound = False
-    #check if most of the website titles are in h1 and record how many
+    #check if most of the website titles are in header tags
+    #if in h1, h2, or h3, append to titles[], else get content from webpage and append to titles[]
     if soup.find('h1'):
       if soup.find('h1').getText():
          temp = soup.find('h1').getText()

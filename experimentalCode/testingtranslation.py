@@ -2,11 +2,9 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: This short file contains snippet code used to test the translation api
 '''
-
-import translators as ts
-
+#go through each URL and translate  titles[] (already stored)
 for x in collected_URLs:
    driver.get(x)
    

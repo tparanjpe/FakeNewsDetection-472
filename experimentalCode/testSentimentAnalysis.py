@@ -2,9 +2,9 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: Another sentiment analysis testing script 
 '''
-
+#import afinn package
 from afinn import Afinn
 
 #Importing packages
@@ -71,6 +71,7 @@ def translateContent(x):
 truthList = ["true", "truth"]
 falseList = ["false", "fake"]
 
+#selenium webdriver settings
 options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
@@ -118,12 +119,6 @@ testCounter = 0
 testTFInputs = []
 df_test = pd.read_csv("../datasets/test.csv")
 
-
-
-# testTFInputs.append([0, 1])
-# for myPair in testTFInputs:
-#    print(myPair)
-#    print([myPair])
 # this is how to get specific item from csv data
 # i iterates through the row(number of data entries) and the second array access is the column
 for i in range(len(df_train)):
@@ -131,7 +126,8 @@ for i in range(len(df_train)):
    #expected_labels.append(int(df_train.values[i][4]))
 
 
-#loop through URLs to get data from websites
+#loop through URLs to get content from websites
+#using try catch just in case error occurs
 for x in collected_URLs_Train:
     try:
       driver.get(x)

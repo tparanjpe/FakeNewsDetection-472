@@ -2,14 +2,13 @@
 Authors: Stephanie Lee and Tara Paranjpe
 Project: CSE472 - Fake News Detection
 Fall 2021
-File Description: 
+File Description: This file was implemented by following a tutorial for machine learning using sklearn. This file was used for understanding machine learning.
 '''
 
 #following this tutorial:
 #https://www.analyticssteps.com/blogs/what-naive-bayes-algorithm-machine-learning
 #Trying figure out the predicter and target in data(the X and Y ) in few.data (only has 2 sets of data) but haven't done much
 
-#%matplotlib inline
 import matplotlib
 import numpy as np
 import pandas as pd
