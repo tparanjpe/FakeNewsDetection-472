@@ -6,8 +6,8 @@
 ## Run instructions
 There are 2 main python files:
 * testscraper.py: This file is the  main source file that includes web scraping with Selenium webdriver and BeautifulSoup. Our program gathers the content from the websites and immediately processes it through a translator, which will then be used to calculate term frequency. The model is trained using Logistic Regression classification model.
- * To run this file, change the chrome driver and binary path to the paths in your machine
- * Please note that scraping the websites may take a while, so we have included the trainModel.py file that has the same function as testscraper.py but omits the data gathering part. It uses the csv file that we have already gathered from running testscraper.py
+  * To run this file, change the chrome driver and binary path to the paths in your machine
+  * Please note that scraping the websites may take a while, so we have included the trainModel.py file that has the same function as testscraper.py but omits the data gathering part. It uses the csv file that we have already gathered from running testscraper.py
 * trainModel.py: Run this file instead if you do not wish to scrape the websites. This file will train the model from the data from the already gathered csv file located in createdCSVs folder. Since this file does not scrape the web, Selenium webdriver is not used.
 
 ## Folders and Organization
