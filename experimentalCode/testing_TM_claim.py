@@ -74,8 +74,8 @@ for i in range(len(df_test)):
 
 # print(collected_claim)
 
-truthList = ["true", "truth", "real", "accurate", "correct"]
-falseList = ["false", "fake", "wrong", "inaccurate"]
+truthList = ["true", "truth", "real", "accurate", "correct", "not false", "not fake"]
+falseList = ["false", "fake", "wrong", "inaccurate", "not true", "not fake"]
 
 # referenced from here:
 # https://www.geeksforgeeks.org/tf-idf-for-bigrams-trigrams/
