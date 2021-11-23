@@ -110,6 +110,7 @@ with open('createdCSVs/test_dataInput.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(["truthcount","falsecount"])
    file.close()
+
 #test variables
 collected_URLs_Test = []
 collected_HTML_Test = []
@@ -121,22 +122,21 @@ testCounter = 0
 testTFInputs = []
 df_test = pd.read_csv("datasets/test.csv")
 
-
-
-
+#iterate through the training df and get the column values for the label and URL
+#potential point for improvement: avoid for loop and grab the column using pandas!
 for i in range(len(df_train)):
    collected_URLs_Train.append(df_train.values[i][5]) 
    expected_label.append(int(df_train.values[i][4]))
 
-
 #loop through URLs to get data from websites
 for x in collected_URLs_Train:
+   #print out which url it is on
    print("URL" + x)
    label = expected_label[labelCounter]
    labelCounter+=1
 
    try:
-      
+      #use the webdriver to get the article
       driver.get(x)
       
       content = driver.page_source
@@ -146,6 +146,7 @@ for x in collected_URLs_Train:
       if soup.find('h1'):
          # print('found h1')
          if(soup.find('h1').getText()):
+            #append the title names
             titles_Train.append(soup.find('h1').getText()) 
             print('content of h1: '+ titles_Train[counter])
             counter = counter + 1
@@ -154,17 +155,22 @@ for x in collected_URLs_Train:
       
       # print(content)
       collected_HTML_Train.append(content)
+      #pass it in to remove_dataComponents to remove unneeded tags
       dataToBeTranslated = remove_dataComponents(content)
 
+      #translate the text to english. 
       Englishstr = translateContent(dataToBeTranslated)
       print(Englishstr)
-      #gets the data from the html file and adds it to a class array
+
       myTerms = [Englishstr]
    
       #gets the term frequency values for each word in the data
       termFrequencyResults=termFrequency.fit_transform(myTerms)
+      #stores TF results in a DF.
       myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
-      # print(myTerms)
+
+
+      #evaluate frequency of terms in both lists
       truthCount = 0
       for term in truthList:
          try:
@@ -180,8 +186,11 @@ for x in collected_URLs_Train:
             falseCount += myVal.get(key=0)
          except:
             print(term + " not found")
+      #store the results
       tfInput.append([falseCount, truthCount])
       model_train_list.append([falseCount, truthCount, label])
+
+      #write the data to the file.
       with open('createdCSVs/train_data.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
          writer.writerow([falseCount, truthCount, label])
@@ -225,15 +234,13 @@ for x in collected_URLs_Test:
 
       Englishstr = translateContent(dataToBeTranslated)
 
-      #gets the data from the html file and adds it to a class array
-      #myParser.feed(Englishstr)
       myTerms = [Englishstr]
-      # with open("Output.txt", "w") as text_file:
-      #    text_file.write(myParser.dataReturned)
+    
       #gets the term frequency values for each word in the data
       termFrequencyResults=termFrequency.fit_transform(myTerms)
       myTerms = pd.DataFrame(termFrequencyResults.toarray(), columns=termFrequency.get_feature_names())
-      # print(myTerms)
+
+      #evaluate frequency
       truthCount = 0
       for term in truthList:
          try:
@@ -250,6 +257,7 @@ for x in collected_URLs_Test:
          except:
             print(term + " not found")
 
+      #Write the data to the file
       testTFInputs.append([falseCount, truthCount])
       with open('createdCSVs/test_dataInput.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
@@ -258,6 +266,8 @@ for x in collected_URLs_Test:
       
    except:
       print("error thrown")
+
+      #if an error is thrown, we indicate it and mark it as -1, since we need the row for the test data.
       with open('createdCSVs/test_dataInput.csv', 'a+', encoding='UTF8') as file:
          writer = csv.writer(file)
          writer.writerow([-1, -1])
@@ -267,21 +277,24 @@ for x in collected_URLs_Test:
 
 
 submissionHeader = ['Id','Predicted']
-with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'w', encoding='UTF8') as file:
+#write submission headers to the the file
+with open('highestScoringSolutions/BESTofficialSubmissionLR.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file, lineterminator='\n')
    writer.writerow(submissionHeader)
    file.close()
 tfList = []
 readInputDF = pd.read_csv('createdCSVs/train_data.csv')
 labelsList = readInputDF["expectedLabel"].tolist()
-
+#get rid of the last column for label.
 readInputDF.drop(columns=readInputDF.columns[-1], 
         axis=1, 
         inplace=True)
 
 for index, row in readInputDF.iterrows():
-    tfList.append(row)
+   tfList.append(row)
 
+
+#this is our model! LR with liblinear solver and regularization strength of 0.01.
 myModel = LogisticRegression(solver='liblinear', C=0.01)
 myModel.fit(tfList, labelsList)
 print(myModel)
@@ -290,10 +303,12 @@ print(myModel)
 counter = 1 
 readTestDF = pd.read_csv('createdCSVs/test_dataInput.csv')
 for index, row in readTestDF.iterrows():
-    predValueArray = myModel.predict([row])
-    predictionValue = predValueArray[0]
-    with open('highestScoringSolutions/BESTofficialSubmissionTestMNB.csv', 'a+', encoding='UTF8') as file:
-        writer = csv.writer(file, lineterminator='\n')
-        writer.writerow([counter, predictionValue])
-        file.close()
-    counter+=1
+   #get the prediction from the model for the test data
+   predValueArray = myModel.predict([row])
+   predictionValue = predValueArray[0]
+   #store it in the submission file.
+   with open('highestScoringSolutions/BESTofficialSubmissionLR.csv', 'a+', encoding='UTF8') as file:
+      writer = csv.writer(file, lineterminator='\n')
+      writer.writerow([counter, predictionValue])
+      file.close()
+   counter+=1
