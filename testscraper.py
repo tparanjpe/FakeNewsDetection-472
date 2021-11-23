@@ -1,3 +1,11 @@
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: This file uses the Selenium Web Scraper package to analyze the fact check articles, srape the contents, translate it, 
+run term frequency on the text, and train our Logistic Regression model. 
+'''
+
 #Importing packages
 from operator import truth
 from bs4.element import Declaration
@@ -15,59 +23,66 @@ from sklearn.linear_model import LogisticRegression
 import translators as ts
 
 
+'''
+This method removes style and script tags from the html body to get the text
+ready for translation and analysis. 
+'''
 def remove_dataComponents(htmlContent):
    mySoup = BeautifulSoup(htmlContent, "html.parser")
    for data in mySoup(['style', 'script']):
       data.decompose()
    return ' '.join(soup.stripped_strings)
 
-#contentToTranslate:String with HTML data
+'''
+This method takes the parsed html (with removed style and script tags) and translates
+the data from the autodetected language to English.
+'''
 def translateContent(x):
    translatedString = ""
    translatedSentences = []
+   #in order to avoid hitting the Google Translate API limit, we have to break the strings up. 
    if len(x) > 100:
          split_strings = []
          temp = ''
          for index in range(0, len(x)):
+            #split at period to indicate end of a sentence
             if x[index] != '.' and x[index] != '!':
                temp += x[index]
-               # print(temp)
             else:
                split_strings.append(temp)
                temp = ''
-         #print(split_strings)
          for y in split_strings:
-            #print('orginal text: ',y)
+            #translate the words and append them to a string to produce result
             result = (ts.google(y))
-            #print('translated text: ', result)
             translatedSentences.append(result)
             translatedString+=result
    else:
-      #print('orginal text: ',x)
       result = (ts.google(x))
-      #print('translated text: ', result)
       translatedSentences.append(result)
       translatedString+=result
    
    return translatedString
 
-
+#true and false lists for words to search for. 
 truthList = ["true", "truth"]
 falseList = ["false", "fake"]
 
+#webdriver initialization
 options = Options()
 options.headless = True
 options.add_argument("--window-size=1920,1080")
 
 chromeOptions = webdriver.ChromeOptions()
+#SPECIFY YOUR CHROME BINARY LOCATION PATH HERE!!
 chromeOptions.binary_location = "C:\Program Files\Google\Chrome\Application\chrome.exe" 
+#SPECIFY YOUR CHROME DRIVER LOCATION HERE!!
 driver = webdriver.Chrome("C:\\Users\\tarap\\Dropbox\\My PC (LAPTOP-EFB1H1KE)\\Desktop\\CSE472\\project2\\chromedriver.exe",  options=chromeOptions)
 
+
+# Initialize the Beautiful Soup object for parsing the data from Selenium
 content = driver.page_source
 soup = BeautifulSoup(content, features="html.parser")
-
-
-#myParser = ParseHTML()
+#initialize the countvectorizer object
 termFrequency = CountVectorizer()
 counter = 0
 counter2 = 0
@@ -81,18 +96,19 @@ model_train_list = []
 expected_label = []
 labelCounter = 0
 tfInput = []
-#parse data.data to get the URLs
 df_train = pd.read_csv("datasets/train.csv")
 headers = ["truthcount","falsecount", "expectedLabel"]
 
+#write the headers for the train_dataInput file
 with open('createdCSVs/train_data.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
    writer.writerow(headers)
    file.close()
 
+#write the headers for the test_dataInput file
 with open('createdCSVs/test_dataInput.csv', 'w', encoding='UTF8') as file:
    writer = csv.writer(file)
-   writer.writerow(headers)
+   writer.writerow(["truthcount","falsecount"])
    file.close()
 #test variables
 collected_URLs_Test = []

@@ -1,3 +1,9 @@
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: 
+'''
 
 import translators as ts
 

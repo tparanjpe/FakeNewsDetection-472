@@ -1,3 +1,10 @@
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: 
+'''
+
 #Importing packages
 from operator import truth
 from bs4.element import Declaration

@@ -1,3 +1,10 @@
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: 
+'''
+
 #following this tutorial:
 #https://www.analyticssteps.com/blogs/what-naive-bayes-algorithm-machine-learning
 #Trying figure out the predicter and target in data(the X and Y ) in few.data (only has 2 sets of data) but haven't done much
@@ -16,9 +23,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn import metrics
  
- #Country (mentioned),Review Date,Claim,Source,Fact-checked Article
-#colnames = ['country', 'review', 'claim', 'source', 'fact_checked_article']
-#pima_df = pd.read_csv("few.data", names= colnames)
+
 pima_df = pd.read_csv("../datasets/few.data")
  
 X = pima_df.drop("Outcome", axis = 1)

@@ -1,3 +1,10 @@
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: 
+'''
+
 from afinn import Afinn
 
 #Importing packages
@@ -16,20 +23,21 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 import translators as ts
 
-# class ParseHTML(HTMLParser):
-#    dataReturned = ""
-#    def handle_data(self, data):
-#       #self.dataReturned.append(data)
-#       self.dataReturned+=data
-#       #print("Encountered some data  :", data)
 
+'''
+This method removes style and script tags from the html body to get the text
+ready for translation and analysis. 
+'''
 def remove_dataComponents(htmlContent):
    mySoup = BeautifulSoup(htmlContent, "html.parser")
    for data in mySoup(['style', 'script']):
       data.decompose()
    return ' '.join(soup.stripped_strings)
 
-#contentToTranslate:String with HTML data
+'''
+This method takes the parsed html (with removed style and script tags) and translates
+the data from the autodetected language to English.
+'''
 def translateContent(x):
    translatedString = ""
    translatedSentences = []

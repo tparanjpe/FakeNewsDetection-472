@@ -1,4 +1,10 @@
-# Importing packages
+'''
+Authors: Stephanie Lee and Tara Paranjpe
+Project: CSE472 - Fake News Detection
+Fall 2021
+File Description: 
+'''
+
 from sklearn import metrics
 from sklearn.naive_bayes import MultinomialNB
 from operator import truth
