@@ -1,6 +1,7 @@
 # Fake News Detection Using NLP Techniques and Machine Learning
-### CSE472 Social Media Mining
-### By Tara Paranjpe and Stephanie Lee
+
+>  CSE472 Social Media Mining
+>  By Tara Paranjpe and Stephanie Lee
 
 ## Run instructions
 There are 2 main python files:
@@ -9,7 +10,7 @@ There are 2 main python files:
  * Please note that scraping the websites may take a while, so we have included the trainModel.py file that has the same function as testscraper.py but omits the data gathering part. It uses the csv file that we have already gathered from running testscraper.py
 * trainModel.py: Run this file instead if you do not wish to scrape the websites. This file will train the model from the data from the already gathered csv file located in createdCSVs folder. Since this file does not scrape the web, Selenium webdriver is not used.
 
-# Folders and Organization
+## Folders and Organization
 There are 4 subfolders total:
 * createdCSVs: Contains all the csv files
 * datasets: Contains all the datasets
