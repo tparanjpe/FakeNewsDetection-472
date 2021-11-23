@@ -12,7 +12,7 @@ There are 2 main python files:
 
 ## Folders and Organization
 There are 4 subfolders total:
-* **createdCSVs**: Contains all the csv files
+* **createdCSVs**: Contains all generated csv files from code
 * **datasets**: Contains all the datasets
 * **experimentalCode**: Contains all the experimental .py files
 * **highestScoringSolutions**: Contains the csv files that scored the best when running with Least Squared Error metric.
