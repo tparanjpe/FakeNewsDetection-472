@@ -17,7 +17,8 @@ There are 4 subfolders total:
 * **experimentalCode**: Contains all the experimental .py files
 * **highestScoringSolutions**: Contains the csv files that scored the best when running with Least Squared Error metric.
 
-There are 2 txt files and 1 README file
+There are 2 txt files, 1 pdf, and 1 README file
 * **actionPlan.txt**: This file details our plannings and research that took place at the beginning of the project
 * **README.md**: Contains run instructions and folder/organization details
 * **requirements.txt**: This file contains all the python packages and version used
+* **CSE472_Project2_FinalReport.pdf**: This pdf file contains the final project report detailing the project description, our research, our solution, and references.
